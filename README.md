@@ -50,6 +50,7 @@ Library/
 - **Gemini API (Google AI)**
 - **Bootstrap**
 - **JavaScript**
+- **Django Template Language**
 
 > 💡 O front-end foi gerado com auxílio de **IA** e aprimorado manualmente.
 
@@ -59,7 +60,7 @@ Library/
 
 ### 1️⃣ Clonar o repositório
 ```bash
-git clone https://github.com/SEU_USUARIO/library-app.git
+git clone https://github.com/diegonegretto/library-app.git
 cd library-app
 ```
 
@@ -78,7 +79,7 @@ pip install -r requirements.txt
 ```
 
 ### 4️⃣ Configurar o arquivo `.env`
-Crie um arquivo `.env` com base no `.env.example` e adicione suas chaves de API do Gemini e configurações locais.
+Crie um arquivo `.env` com base no `.env.example` e adicione suas chaves de API do Gemini e configurações locais. Caso nenhuma chave API for informada, o sistema funcionará normalmente sem as gerações automáticas feitas pela IA.
 
 ### 5️⃣ Executar as migrações
 ```bash
@@ -105,11 +106,15 @@ Abaixo, alguns exemplos das principais telas do sistema:
 ### Detalhes do livro
 ![Detalhes do livro](screenshots/book_detail.png)
 
-### Cadastro de livro
-![Cadastro de livro](screenshots/book_create.png)
-
 ### Biblioteca do usuário
 ![Biblioteca particular](screenshots/user_library.png)
+
+### Lista de Autores
+![Lista de autores](screenshots/authors.png)
+
+### Detalhes do autor
+![Detalhes do autor](screenshots/book_detail.png)
+
 
 > 💬 As imagens acima estão localizadas na pasta `screenshots/` do projeto.
 
