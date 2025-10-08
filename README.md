@@ -78,8 +78,21 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Configurar o arquivo `.env`
+### 4️⃣ Configuração da chave da API 🔑 
 Crie um arquivo `.env` com base no `.env.example` e adicione suas chaves de API do Gemini e configurações locais. Caso nenhuma chave API for informada, o sistema funcionará normalmente sem as gerações automáticas feitas pela IA.
+
+Crie um arquivo `.env` na raiz do projeto baseado no modelo
+`.env.example`:
+
+``` bash
+cp .env.example .env
+```
+
+Abra o `.env` e insira sua chave da API:
+
+``` env
+API_KEY=sua_chave_aqui
+```
 
 ### 5️⃣ Executar as migrações
 ```bash
