@@ -113,7 +113,7 @@ Abaixo, alguns exemplos das principais telas do sistema:
 ![Lista de autores](screenshots/authors.png)
 
 ### Detalhes do autor
-![Detalhes do autor](screenshots/book_detail.png)
+![Detalhes do autor](screenshots/author_detail.png)
 
 
 > 💬 As imagens acima estão localizadas na pasta `screenshots/` do projeto.
