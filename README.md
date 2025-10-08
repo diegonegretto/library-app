@@ -91,27 +91,7 @@ python manage.py runserver
 ```
 
 Acesse o sistema em:  
-👉 [http://localhost:8000](http://localhost:8000)
-
----
-
-## 🖼️ Demonstração
-
-Abaixo, alguns exemplos das principais telas do sistema:
-
-### Página inicial
-![Tela inicial](screenshots/home.png)
-
-### Detalhes do livro
-![Detalhes do livro](screenshots/book_detail.png)
-
-### Cadastro de livro
-![Cadastro de livro](screenshots/book_create.png)
-
-### Biblioteca do usuário
-![Biblioteca particular](screenshots/user_library.png)
-
-> 💬 As imagens acima estão localizadas na pasta `screenshots/` do projeto.
+👉 [http://localhost:8000/books](http://localhost:8000/books)
 
 ---
 
