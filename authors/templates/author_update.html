@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Autor - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'authors_list' %}" class="text-decoration-none">
+                Autores
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Editar Autor
+        </li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary mb-1">
+            <i class="bi bi-pencil-square me-2"></i>Editar Autor
+        </h1>
+        <p class="text-muted mb-0">Atualize as informações de "{{ object.name }}"</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-badge me-2"></i>Informações do Autor
+                </h5>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Info Alert -->
+                <div class="alert alert-info d-flex align-items-start mb-4">
+                    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Editando:</strong> {{ object.name }}
+                        <br>
+                        <small>As alterações serão refletidas em todos os livros deste autor.</small>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                {% if form.errors %}
+                    <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                        <div>
+                        <strong>Por favor, corrija os erros abaixo:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Campos marcados com * são obrigatórios</li>                            
+                        </ul>
+                    </div>
+                    </div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data" id="authorForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <!-- Name Field -->
+                        <div class="col-12">
+                            <label for="id_name" class="form-label fw-semibold">
+                                <i class="bi bi-person me-2 text-primary"></i>Nome Completo *
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="id_name" 
+                                   name="name" 
+                                   value="{{ object.name }}"
+                                   placeholder="Digite o nome completo do autor"
+                                   required>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Nome completo do escritor (ex: Machado de Assis)
+                            </div>
+                        </div>
+
+                        <!-- Birth Date and Nationality Row -->
+                        <div class="col-md-6">
+                            <label for="id_birth_date" class="form-label fw-semibold">
+                                <i class="bi bi-calendar3 me-2 text-primary"></i>Data de Nascimento
+                            </label>
+                            <input type="date" 
+                                   class="form-control form-control-lg" 
+                                   id="id_birth_date" 
+                                   name="birth_date"
+                                   value="{{ object.birth_date|date:'Y-m-d' }}">
+                            <div class="form-text">
+                                <i class="bi bi-cake me-1"></i>
+                                Data de nascimento do autor
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_nationality" class="form-label fw-semibold">
+                                <i class="bi bi-geo-alt me-2 text-primary"></i>Nacionalidade
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="id_nationality" 
+                                   name="nationality" 
+                                   value="{{ object.nationality }}"
+                                   placeholder="Ex: Brasileira, Portuguesa, Argentina"
+                                   list="nationalityList">
+                            <datalist id="nationalityList">
+                                <option value="Brasileira">
+                                <option value="Portuguesa">
+                                <option value="Americana">
+                                <option value="Inglesa">
+                                <option value="Francesa">
+                                <option value="Espanhola">
+                                <option value="Argentina">
+                                <option value="Alemã">
+                                <option value="Italiana">
+                                <option value="Japonesa">
+                            </datalist>
+                            <div class="form-text">
+                                <i class="bi bi-flag me-1"></i>
+                                País de origem do autor
+                            </div>
+                        </div>
+
+                        <!-- Biography Field -->
+                        <div class="col-12">
+                            <label for="id_biography" class="form-label fw-semibold">
+                                <i class="bi bi-journal-text me-2 text-primary"></i>Biografia
+                            </label>
+                            <textarea class="form-control" 
+                                      id="id_biography" 
+                                      name="biography" 
+                                      rows="5" 
+                                      placeholder="Escreva uma breve biografia do autor...">{{ object.biography }}</textarea>
+                            <div class="form-text">
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                História e informações relevantes sobre o autor
+                                <span class="float-end text-muted" id="bioCharCount">0/2000 caracteres</span>
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload Field -->
+                        <div class="col-12">
+                            <label for="id_photo" class="form-label fw-semibold">
+                                <i class="bi bi-image me-2 text-primary"></i>Foto do Autor
+                            </label>
+                            
+                            <!-- Current Photo Preview -->
+                            {% if object.photo %}
+                            <div class="mb-3">
+                                <p class="text-muted small mb-2">Foto atual:</p>
+                                <img src="{{ object.photo.url }}" 
+                                     class="img-thumbnail rounded-circle" 
+                                     alt="{{ object.name }}"
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     id="currentPhoto">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="removePhoto" 
+                                           name="remove_photo">
+                                    <label class="form-check-label text-danger" for="removePhoto">
+                                        <i class="bi bi-trash me-1"></i>Remover foto atual
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card border-2 border-dashed">
+                                <div class="card-body text-center py-4">
+                                    <div class="mb-3">
+                                        <i class="bi bi-person-circle text-muted" style="font-size: 4rem;"></i>
+                                    </div>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="id_photo" 
+                                           name="photo" 
+                                           accept="image/*">
+                                    <div class="form-text mt-3">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        {% if object.photo %}
+                                        Selecione uma nova foto para substituir a atual
+                                        {% else %}
+                                        Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Preview Area for New Photo -->
+                                    <div id="imagePreview" class="mt-3" style="display: none;">
+                                        <p class="text-muted small mb-2">Nova foto:</p>
+                                        <img id="previewImg" class="img-thumbnail rounded-circle" style="max-height: 150px; max-width: 150px; object-fit: cover;">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeNewImage()">
+                                                <i class="bi bi-x me-1"></i>Cancelar nova foto
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Alert -->
+                    <div class="alert alert-warning d-flex align-items-center mt-4">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <small>
+                            <strong>Atenção:</strong> Alterar informações do autor afetará todos os livros associados.
+                        </small>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <a href="{% url 'authors_list' %}" 
+                               class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg w-100" 
+                                    id="submitBtn">
+                                <i class="bi bi-check-circle me-2"></i>Atualizar Autor
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change History Card -->
+        <div class="card border-0 bg-light mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-clock-history me-2"></i>Informações da Edição:
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Nome Original:</small>
+                        <strong>{{ object.name }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Status:</small>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle me-1"></i>Ativo
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% load static %}{% static 'js/edit_author.js' %}"></script>
+{% endblock %}

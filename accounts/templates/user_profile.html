@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil do Usuário - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Meu Perfil
+        </li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary mb-1">
+            <i class="bi bi-person-circle me-2"></i>Meu Perfil
+        </h1>
+        <p class="text-muted mb-0">Gerencie suas informações pessoais</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Profile Information Card -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle me-2 text-primary"></i>Informações Pessoais
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Username -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-at text-primary fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Nome de Usuário</small>
+                                <strong class="fs-6">{{ user_profile.username }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User ID -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-hash text-secondary fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">ID do Usuário</small>
+                                <strong class="fs-6">#{{ user_profile.id }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- First Name -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-person text-success fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Nome</small>
+                                <strong class="fs-6">{{ user_profile.first_name|default:"Não informado" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-person-fill text-info fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Sobrenome</small>
+                                <strong class="fs-6">{{ user_profile.last_name|default:"Não informado" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-envelope text-warning fs-5"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Email</small>
+                                <strong class="fs-6">{{ user_profile.email|default:"Não informado" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Status & Actions Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear me-2 text-primary"></i>Status & Ações
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <!-- User Status -->
+                <div class="text-center mb-4">
+                    {% if user_profile.is_superuser %}
+                        <div class="bg-danger bg-opacity-10 rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-shield-fill-check text-danger" style="font-size: 2rem;"></i>
+                        </div>
+                        <h6 class="fw-bold text-danger">Administrador</h6>
+                        <small class="text-muted">Acesso total ao sistema</small>
+                    {% else %}
+                        <div class="bg-primary bg-opacity-10 rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-person-check text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        <h6 class="fw-bold text-primary">Usuário</h6>
+                        <small class="text-muted">Membro da biblioteca</small>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    <a href="{% url 'user_update' %}" class="btn btn-primary">
+                        <i class="bi bi-pencil me-2"></i>Editar Perfil
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mt-2">
+    <div class="col-md-4">
+        <div class="card border-0 bg-primary text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-book display-4 mb-2"></i>
+                <h5 class="fw-bold">Livros</h5>
+                <p class="mb-0">Cadastrados por você</p>
+                <h6 class="fw-bold mt-2">{{books}}</h6>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-0 bg-success text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-calendar-check display-4 mb-2"></i>
+                <h5 class="fw-bold">Membro desde</h5>
+                <p class="mb-0">Data de cadastro</p>
+                <h6 class="fw-bold mt-2">{{ user_profile.date_joined|date:"M Y" }}</h6>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card border-0 bg-info text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-clock display-4 mb-2"></i>
+                <h5 class="fw-bold">Último Acesso</h5>
+                <p class="mb-0">Login mais recente</p>
+                <h6 class="fw-bold mt-2">
+                    {% if user_profile.last_login %}
+                        {{ user_profile.last_login|date:"d/m/Y" }}
+                    {% else %}
+                        Primeiro acesso
+                    {% endif %}
+                </h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-lightning me-2 text-primary"></i>Ações Rápidas
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{% url 'new_book' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-plus-circle me-2"></i>Adicionar Livro
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'books_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-collection me-2"></i>Ver Biblioteca
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'authors_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-people me-2"></i>Ver Autores
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danger Zone -->
+<div class="card border-danger mt-4">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>Zona de Perigo
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h6 class="fw-bold text-danger">Excluir Conta</h6>
+                <p class="text-muted mb-0">
+                    Esta ação não pode ser desfeita. Todos os seus dados serão permanentemente removidos.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'user_delete' %}" 
+                   class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>Excluir Conta
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced delete confirmation - removed since it goes to dedicated page
+    const deleteBtn = document.querySelector('a[href*="user_delete"]');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            // Simple confirmation before going to delete page
+            const confirmFirst = confirm(
+                '⚠️ ATENÇÃO!\n\n' +
+                'Você está prestes a acessar a página de exclusão de conta.\n\n' +
+                'Deseja continuar?'
+            );
+            
+            if (!confirmFirst) {
+                e.preventDefault();
+            }
+        });
+    }
+        
+    // Add hover effects to info cards
+    const infoCards = document.querySelectorAll('.d-flex.align-items-center');
+    infoCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.borderRadius = '8px';
+            this.style.transform = 'translateX(5px)';
+            this.style.transition = 'all 0.2s ease';
+            this.style.padding = '10px';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.borderRadius = '';
+            this.style.transform = '';
+            this.style.padding = '';
+        });
+    });
+});
+</script>
+{% endblock %}

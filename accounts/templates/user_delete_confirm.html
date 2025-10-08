@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir Conta - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'user_profile' %}" class="text-decoration-none">
+                Perfil
+            </a>
+        </li>
+        <li class="breadcrumb-item active text-danger" aria-current="page">
+            Excluir Conta
+        </li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <!-- Warning Header -->
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle-fill display-2"></i>
+                </div>
+                <h2 class="fw-bold mb-1">Excluir Conta</h2>
+                <p class="mb-0 opacity-75">Esta ação é irreversível</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Warning Message -->
+                <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
+                    <i class="bi bi-shield-exclamation me-3 fs-4 mt-1"></i>
+                    <div>
+                        <h5 class="alert-heading fw-bold">⚠️ ATENÇÃO CRÍTICA!</h5>
+                        <p class="mb-0">
+                            Esta ação <strong>NÃO PODE SER DESFEITA</strong>. 
+                            Uma vez confirmada, sua conta será permanentemente excluída.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- What Will Be Lost -->
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger fw-bold">
+                            <i class="bi bi-x-circle me-2"></i>O que você perderá:
+                        </h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-person-x text-danger me-2"></i>
+                                <strong>Todos os seus dados pessoais</strong>
+                                <br><small class="text-muted ms-4">Nome, email, configurações, etc.</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-clock-history text-danger me-2"></i>
+                                <strong>Histórico completo de atividades</strong>
+                                <br><small class="text-muted ms-4">Livros adicionados, edições, comentários, etc.</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-gear-fill text-danger me-2"></i>
+                                <strong>Todas as configurações personalizadas</strong>
+                                <br><small class="text-muted ms-4">Preferências, filtros salvos, etc.</small>
+                            </li>
+                            <li>
+                                <i class="bi bi-key text-danger me-2"></i>
+                                <strong>Acesso permanente ao sistema</strong>
+                                <br><small class="text-muted ms-4">Você precisará criar uma nova conta para voltar</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- User Information -->
+                <div class="card border-primary mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title text-primary fw-bold">
+                            <i class="bi bi-info-circle me-2"></i>Conta que será excluída:
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Usuário:</small>
+                                <strong>{{ user.username }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Email:</small>
+                                <strong>{{ user.email|default:"Não informado" }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Nome:</small>
+                                <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted d-block">Membro desde:</small>
+                                <strong>{{ user.date_joined|date:"d/m/Y" }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation Form -->
+                <form method="post" id="deleteForm">
+                    {% csrf_token %}
+                    
+                    <!-- Confirmation Checkbox -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title text-warning fw-bold">
+                                <i class="bi bi-check2-square me-2"></i>Confirmações Obrigatórias:
+                            </h6>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="confirm1" required>
+                                <label class="form-check-label fw-semibold" for="confirm1">
+                                    Entendo que esta ação é <span class="text-danger">irreversível</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="confirm2" required>
+                                <label class="form-check-label fw-semibold" for="confirm2">
+                                    Confirmo que todos os meus dados serão <span class="text-danger">perdidos permanentemente</span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirm3" required>
+                                <label class="form-check-label fw-semibold" for="confirm3">
+                                    Assumo total responsabilidade por esta decisão
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Type Username Confirmation -->
+                    <div class="mb-4">
+                        <label for="usernameConfirm" class="form-label fw-bold text-danger">
+                            <i class="bi bi-keyboard me-2"></i>
+                            Para continuar, digite seu nome de usuário: <code>{{ user.username }}</code>
+                        </label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="usernameConfirm" 
+                               placeholder="Digite exatamente: {{ user.username }}"
+                               required>
+                        <div class="invalid-feedback">
+                            Nome de usuário não confere. Digite exatamente como mostrado acima.
+                        </div>
+                    </div>
+
+                    <!-- Final Question -->
+                    <div class="text-center mb-4">
+                        <h5 class="fw-bold text-danger">
+                            Tem certeza absoluta que deseja excluir permanentemente sua conta?
+                        </h5>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{% url 'user_profile' %}" class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="bi bi-arrow-left me-2"></i>Cancelar e Voltar
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" 
+                                    class="btn btn-danger btn-lg w-100" 
+                                    id="deleteBtn" 
+                                    disabled>
+                                <i class="bi bi-trash me-2"></i>Sim, Excluir Minha Conta
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="card border-0 bg-light mt-4">
+            <div class="card-body text-center">
+                <h6 class="fw-bold text-primary">
+                    <i class="bi bi-question-circle me-2"></i>Mudou de Ideia?
+                </h6>
+                <p class="text-muted mb-3">
+                    Se você está excluindo sua conta por algum problema, 
+                    talvez possamos ajudar sem que você perca seus dados.
+                </p>
+                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                    <a href="{% url 'user_profile' %}" class="btn btn-primary">
+                        <i class="bi bi-person-gear me-2"></i>Editar Perfil
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-key me-2"></i>Trocar Senha
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('deleteForm');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const usernameConfirm = document.getElementById('usernameConfirm');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const expectedUsername = '{{ user.username|escapejs }}';
+    
+    // Function to validate all requirements
+    function validateForm() {
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        const usernameMatches = usernameConfirm.value === expectedUsername;
+        
+        deleteBtn.disabled = !(allChecked && usernameMatches);
+        
+        // Visual feedback for username field
+        if (usernameConfirm.value.length > 0) {
+            if (usernameMatches) {
+                usernameConfirm.classList.remove('is-invalid');
+                usernameConfirm.classList.add('is-valid');
+            } else {
+                usernameConfirm.classList.remove('is-valid');
+                usernameConfirm.classList.add('is-invalid');
+            }
+        } else {
+            usernameConfirm.classList.remove('is-valid', 'is-invalid');
+        }
+    }
+    
+    // Add event listeners
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', validateForm);
+    });
+    
+    usernameConfirm.addEventListener('input', validateForm);
+    
+    // Form submission with final confirmation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Final confirmation dialog
+        const finalConfirm = confirm(
+            '🚨 ÚLTIMA CONFIRMAÇÃO 🚨\n\n' +
+            'Esta é sua ÚLTIMA chance de cancelar.\n\n' +
+            'Após clicar em OK, sua conta será PERMANENTEMENTE excluída.\n\n' +
+            '⚠️ NÃO HÁ VOLTA! ⚠️\n\n' +
+            'Tem certeza absoluta?'
+        );
+        
+        if (finalConfirm) {
+            // Change button state
+            deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Excluindo conta...';
+            deleteBtn.disabled = true;
+            
+            // Add fade out effect
+            document.body.style.transition = 'opacity 0.5s ease';
+            document.body.style.opacity = '0.7';
+            
+            // Submit form
+            form.submit();
+        }
+    });
+    
+    // Warn on page leave
+    let formModified = false;
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => formModified = true);
+    });
+    
+    usernameConfirm.addEventListener('input', () => formModified = true);
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (formModified && !deleteBtn.disabled) {
+            e.preventDefault();
+            e.returnValue = 'Você tem alterações não salvas. Tem certeza que deseja sair?';
+        }
+    });
+    
+    // Auto-focus on first checkbox
+    document.getElementById('confirm1').focus();
+});
+</script>
+{% endblock %}

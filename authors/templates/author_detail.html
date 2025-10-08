@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object.name }} - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'authors_list' %}" class="text-decoration-none">
+                Autores
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {{ object.name|truncatechars:30 }}
+        </li>
+    </ol>
+</nav>
+
+<!-- Main Author Details -->
+<div class="row g-4">
+    <!-- Author Photo -->
+    <div class="col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="position-relative">
+                {% if object.photo %}
+                    <img src="{{ object.photo.url }}" 
+                         class="card-img-top rounded-3" 
+                         alt="{{ object.name }}"
+                         style="height: 400px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted rounded-3"
+                         style="height: 400px;">
+                        <i class="bi bi-person-circle display-1"></i>
+                    </div>
+                {% endif %}
+                
+                <!-- Verified Badge -->
+                <div class="position-absolute top-0 end-0 m-3">
+                    <span class="badge bg-primary fs-6">
+                        <i class="bi bi-patch-check me-1"></i>Verificado
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons (Mobile) -->
+        {% if user.is_authenticated %}
+        <div class="d-md-none mt-3">
+            <div class="d-grid gap-2">
+                <a href="{% url 'author_update' pk=object.pk %}" class="btn btn-primary">
+                    <i class="bi bi-pencil me-2"></i>Editar Autor
+                </a>
+                <a href="{% url 'author_delete' pk=object.pk %}" 
+                   class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-2"></i>Excluir Autor
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Author Information -->
+    <div class="col-md-8 col-lg-9">
+        <div class="row g-4">
+            <!-- Main Info Card -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <!-- Name and Actions -->
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div>
+                                <h1 class="h2 text-primary fw-bold mb-2">{{ object.name }}</h1>
+                                <p class="text-muted mb-0 fs-5">Escritor</p>
+                            </div>
+                            
+                            <!-- Action Buttons (Desktop) -->
+                            {% if user.is_authenticated %}
+                            <div class="d-none d-md-flex gap-2">
+                                <a href="{% url 'author_update' pk=object.pk %}" 
+                                   class="btn btn-primary">
+                                    <i class="bi bi-pencil me-2"></i>Editar
+                                </a>
+                                <a href="{% url 'author_delete' pk=object.pk %}" 
+                                   class="btn btn-outline-danger">
+                                    <i class="bi bi-trash me-2"></i>Excluir
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Author Metadata -->
+                        <div class="row g-4 mb-4">
+                            {% if object.birth_date %}
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-calendar3 text-primary me-3 fs-4"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Data de Nascimento</small>
+                                        <strong>{{ object.birth_date|date:"d/m/Y" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if object.nationality %}
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-geo-alt text-primary me-3 fs-4"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Nacionalidade</small>
+                                        <strong>{{ object.nationality }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Biography -->
+                        {% if object.biography %}
+                        <div>
+                            <h5 class="fw-bold mb-3">
+                                <i class="bi bi-book text-primary me-2"></i>Biografia
+                            </h5>
+                            <div class="bg-light p-4 rounded-3">
+                                <p class="mb-0 lh-lg text-justify">{{ object.biography|linebreaks }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Author Statistics Cards -->
+<div class="row g-4 mt-2">
+    <!-- Books Count -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-primary text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-book-half display-4 mb-2"></i>
+                <h5 class="fw-bold">Livros</h5>
+                <p class="mb-0">Obras na biblioteca</p>
+                <h6 class="fw-bold mt-2">{{books}}</h6>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reading Status -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-success text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-award display-4 mb-2"></i>
+                <h5 class="fw-bold">Reconhecimento</h5>
+                <p class="mb-0">Status do autor</p>
+                <h6 class="fw-bold mt-2">Cadastrado</h6>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Popularity -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-info text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-heart display-4 mb-2"></i>
+                <h5 class="fw-bold">Popularidade</h5>
+                <p class="mb-0">Entre os leitores</p>
+                <h6 class="fw-bold mt-2">-</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Back Button -->
+<div class="d-flex justify-content-center mt-5">
+    <a href="{% url 'authors_list' %}" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-arrow-left me-2"></i>Voltar aos Autores
+    </a>
+</div>
+
+<!-- Quick Actions -->
+{% if user.is_authenticated %}
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-lightning me-2 text-primary"></i>Ações Rápidas
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{% url 'new_book' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-plus-circle me-2"></i>Adicionar Livro
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'genres_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-tags me-2"></i>Ver Gêneros
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'authors_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-people me-2"></i>Ver Autores
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {  
+    
+    // Lazy loading for author image
+    const authorImage = document.querySelector('.card-img-top');
+    if (authorImage && authorImage.tagName === 'IMG') {
+        authorImage.style.transition = 'opacity 0.3s ease';
+        authorImage.style.opacity = '0';
+        
+        authorImage.addEventListener('load', function() {
+            this.style.opacity = '1';
+        });
+        
+        // Fallback if image already loaded
+        if (authorImage.complete) {
+            authorImage.style.opacity = '1';
+        }
+    }
+    
+    // Add reading animation to biography
+    const biography = document.querySelector('.bg-light p');
+    if (biography && biography.textContent.length > 500) {
+        biography.classList.add('text-justify');
+        biography.style.textAlign = 'justify';
+    }
+    
+    // Smooth scroll for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });  
+      
+    // Copy author name to clipboard on click
+    const authorName = document.querySelector('h1');
+    if (authorName) {
+        authorName.style.cursor = 'pointer';
+        authorName.title = 'Clique para copiar o nome';
+        
+        authorName.addEventListener('click', function() {
+            const name = this.textContent.trim();
+            navigator.clipboard.writeText(name).then(() => {
+                // Show temporary feedback
+                const originalColor = this.style.color;
+                this.style.color = '#28a745';
+                this.innerHTML += ' <i class="bi bi-check2 ms-2"></i>';
+                
+                setTimeout(() => {
+                    this.style.color = originalColor;
+                    this.innerHTML = name;
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                console.log('Nome do autor:', name);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

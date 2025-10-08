@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}{{ object.title }} - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {{ object.title|truncatechars:30 }}
+        </li>
+    </ol>
+</nav>
+
+<!-- Main Book Details -->
+<div class="row g-4">
+    <!-- Book Cover -->
+    <div class="col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="position-relative">
+                {% if object.photo %}
+                <img src="{{ object.photo.url }}" class="card-img-top rounded-3" alt="{{ object.title }}"
+                    style="height: 400px; object-fit: contain;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center text-muted rounded-3"
+                    style="height: 400px;">
+                    <i class="bi bi-book display-1"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons (Mobile) -->
+        {% if user.is_authenticated %}
+        <div class="d-md-none mt-3">
+            <div class="d-grid gap-2">
+                <a href="{% url 'book_update' pk=object.pk %}" class="btn btn-primary">
+                    <i class="bi bi-pencil me-2"></i>Editar Livro
+                </a>
+                <a href="{% url 'book_delete' pk=object.pk %}" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-2"></i>Excluir Livro
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Book Information -->
+    <div class="col-md-8 col-lg-9">
+        <div class="row g-4">
+            <!-- Main Info Card -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <!-- Title and Genre -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h1 class="h2 text-primary fw-bold mb-2">{{ object.title }}</h1>
+                                {% if object.literary_genre %}
+                                <span class="badge bg-secondary fs-6 mb-3">
+                                    <i class="bi bi-tag me-1"></i>{{ object.literary_genre }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Action Buttons (Desktop) -->
+                            {% if user.is_authenticated %}
+                            {% if user.id == object.created_by.id %}
+                            <div class="d-none d-md-flex gap-2">
+                                <a href="{% url 'book_update' pk=object.pk %}" class="btn btn-primary">
+                                    <i class="bi bi-pencil me-2"></i>Editar
+                                </a>
+                                <a href="{% url 'book_delete' pk=object.pk %}" class="btn btn-outline-danger">
+                                    <i class="bi bi-trash me-2"></i>Excluir
+                                </a>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Book Metadata -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person text-primary me-3 fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Autor</small>
+                                        <strong>{{ object.author }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-calendar3 text-primary me-3 fs-5"></i>
+                                    <div>
+                                        <small class="text-muted d-block">Ano de Publicação</small>
+                                        <strong>{{ object.publication_year }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Synopsis -->
+                        {% if object.synopsis %}
+                        <div>
+                            <h5 class="fw-bold mb-3">
+                                <i class="bi bi-journal-text text-primary me-2"></i>Sinopse
+                            </h5>
+                            <div class="bg-light p-4 rounded-3">
+                                <p class="mb-0 lh-lg">{{ object.synopsis|linebreaks }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Information Cards -->
+<div class="row g-4 mt-2">
+    <!-- Book Statistics -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-primary text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-eye display-4 mb-2"></i>
+                <h5 class="fw-bold">Visualizações</h5>
+                <p class="mb-0">Em breve</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reading Status -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-success text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-person display-4 mb-2"></i>
+                <h5 class="fw-bold">Autor</h5>
+                <p class="mb-0">{{ object.author }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category -->
+    <div class="col-md-4">
+        <div class="card border-0 bg-info text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-collection display-4 mb-2"></i>
+                <h5 class="fw-bold">Categoria</h5>
+                <p class="mb-0">{{ object.literary_genre|default:"Não classificado" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
+<div class="d-flex justify-content-center mt-5">
+    <a href="{% url 'books_list' %}" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-arrow-left me-2"></i>Voltar à Biblioteca
+    </a>
+</div>
+
+<!-- Quick Actions -->
+{% if user.is_authenticated %}
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-lightning me-2 text-primary"></i>Ações Rápidas
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{% url 'new_book' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-plus-circle me-2"></i>Adicionar Livro
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'genres_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-tags me-2"></i>Ver Gêneros
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'authors_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-people me-2"></i>Ver Autores
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        // Add reading animation to synopsis
+        const synopsis = document.querySelector('.bg-light p');
+        if (synopsis && synopsis.textContent.length > 500) {
+            synopsis.classList.add('text-justify');
+        }
+
+        // Lazy loading for large images
+        const bookImage = document.querySelector('.card-img-top');
+        if (bookImage && bookImage.tagName === 'IMG') {
+            bookImage.style.transition = 'opacity 0.3s ease';
+            bookImage.style.opacity = '0';
+
+            bookImage.addEventListener('load', function () {
+                this.style.opacity = '1';
+            });
+
+            // Fallback if image already loaded
+            if (bookImage.complete) {
+                bookImage.style.opacity = '1';
+            }
+        }
+    });
+</script>
+{% endblock %}

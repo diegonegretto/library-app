@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Autores - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary mb-1">
+            <i class="bi bi-people me-2"></i>Autores Cadastrados
+        </h1>
+        <p class="text-muted mb-0">Conheça os escritores da nossa biblioteca</p>
+    </div>
+    <div class="col-auto">
+        {% if user.is_authenticated %}
+        <a href="{% url 'new_author' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-2"></i>Novo Autor
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+{% if authors %}
+<!-- Authors Count -->
+<div class="card bg-primary text-white text-center mb-4">
+    <div class="card-body py-3">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <i class="bi bi-person-badge display-4"></i>
+            </div>
+            <div class="col-md-8">
+                <h3 class="fw-bold mb-1">{{ authors|length }}</h3>
+                <p class="mb-0 opacity-75">
+                    {% if authors|length == 1 %}
+                    Autor cadastrado na biblioteca
+                    {% else %}
+                    Autores cadastrados na biblioteca
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Authors Grid -->
+<div class="row g-4 mb-4">
+    {% for author in authors %}
+    <div class="col-lg-6 col-xl-4">
+        <div class="card h-100 border-0 shadow-sm author-card">
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <!-- Author Photo -->
+                    <div class="col-4">
+                        <div class="position-relative">
+                            {% if author.photo %}
+                            <img src="{{ author.photo.url }}" class="img-fluid rounded-circle author-photo"
+                                alt="{{ author.name }}" style="width: 80px; height: 80px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-muted author-photo-placeholder"
+                                style="width: 80px; height: 80px;">
+                                <i class="bi bi-person-circle fs-1"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Author Info -->
+                    <div class="col-8">
+                        <h5 class="card-title fw-bold text-primary mb-2">
+                            {{ author.name }}
+                        </h5>
+
+                        {% if author.nationality %}
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-geo-alt me-1"></i>{{ author.nationality }}
+                        </p>
+                        {% endif %}
+
+                        {% if author.birth_date %}
+                        <p class="text-muted mb-2">
+                            <i class="bi bi-calendar3 me-1"></i>{{ author.birth_date|date:"d/m/Y" }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Biography Preview -->
+                {% if author.biography %}
+                <div class="mt-3">
+                    <p class="text-muted small mb-3 lh-sm">
+                        {{ author.biography|truncatewords:250 }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Action Button -->
+                <div class="mt-auto pt-3">
+                    <a href="{% url 'author_detail' author.pk %}" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-eye me-2"></i>Ver Detalhes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Navegação de autores">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+                href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                Próxima <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Add Author Button (Bottom) -->
+{% if user.is_authenticated %}
+<div class="text-center mt-5">
+    <a href="{% url 'new_author' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-person-plus me-2"></i>Adicionar Novo Autor
+    </a>
+</div>
+{% endif %}
+
+{% else %}
+ <div class="text-center py-5">
+    <div class="mb-4">
+            <i class="bi bi-person text-muted" style="font-size: 6rem;"></i>
+    </div>
+    <h2 class="h4 text-muted mb-3">
+            Nenhum autor cadastrado.           
+    </h2>
+    <p class="text-muted mb-4 lead">
+        Comece cadastrando o primeiro autor da sua biblioteca.
+    </p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'new_author' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-person-plus me-2"></i>Cadastrar Primeiro Autor
+    </a>
+    {% else %}
+    <div class="d-flex gap-2 justify-content-center">
+        <a href="{% url 'login' %}" class="btn btn-primary">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+        </a>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+            <i class="bi bi-person-plus me-2"></i>Criar Conta
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Statistics Cards -->
+{% if authors %}
+<div class="row g-4 mt-3">
+    <div class="col-md-4">
+        <div class="card border-0 bg-success text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-person-check display-4 mb-2"></i>
+                <h3 class="fw-bold">{{ authors|length }}</h3>
+                <p class="mb-0">Total de Autores</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 bg-info text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-globe display-4 mb-2"></i>
+                <h3 class="fw-bold">{{nationalities}}</h3>
+                <p class="mb-0">Nacionalidades</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 bg-warning text-white text-center">
+            <div class="card-body">
+                <i class="bi bi-book display-4 mb-2"></i>
+                <h3 class="fw-bold">{{books}}</h3>
+                <p class="mb-0">Obras Cadastradas</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+{% if user.is_authenticated %}
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-lightning me-2 text-primary"></i>Ações Rápidas
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{% url 'new_book' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-plus-circle me-2"></i>Adicionar Livro
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'books_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-book me-2"></i>Ver Livros
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'genres_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-tags me-2"></i>Ver Gêneros
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add hover effects to author cards
+        const authorCards = document.querySelectorAll('.author-card');
+
+        authorCards.forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-5px)';
+                this.style.transition = 'all 0.3s ease';
+                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Lazy loading for author photos
+        const authorPhotos = document.querySelectorAll('.author-photo');
+        authorPhotos.forEach(photo => {
+            if (photo.tagName === 'IMG') {
+                photo.style.transition = 'opacity 0.3s ease';
+                photo.style.opacity = '0';
+
+                photo.addEventListener('load', function () {
+                    this.style.opacity = '1';
+                });
+
+                // Fallback if image already loaded
+                if (photo.complete) {
+                    photo.style.opacity = '1';
+                }
+            }
+        });        
+    });
+</script>
+{% endblock %}

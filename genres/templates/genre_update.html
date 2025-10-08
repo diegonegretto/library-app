@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Gênero - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'genres_list' %}" class="text-decoration-none">
+                Gêneros
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Editar Gênero
+        </li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary mb-1">
+            <i class="bi bi-pencil-square me-2"></i>Editar Gênero Literário
+        </h1>
+        <p class="text-muted mb-0">Atualize as informações do gênero "{{ object.name }}"</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-pencil me-2"></i>Informações do Gênero
+                </h5>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Info Alert -->
+                <div class="alert alert-info d-flex align-items-start mb-4">
+                    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Editando:</strong> {{ object.name }}
+                        <br>
+                        <small>As alterações afetarão todos os livros associados a este gênero.</small>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                {% if form.errors %}
+                    <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                        <div>
+                        <strong>Por favor, corrija os erros abaixo:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Campos marcados com * são obrigatórios</li>                            
+                        </ul>
+                    </div>
+                    </div>
+                {% endif %}
+
+                <form method="POST" id="genreForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <!-- Name Field -->
+                        <div class="col-12">
+                            <label for="id_name" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-2 text-primary"></i>Nome do Gênero *
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="id_name" 
+                                   name="name" 
+                                   value="{{ object.name }}"
+                                   placeholder="Ex: Ficção Científica, Romance, Terror..."
+                                   required>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Nome que identifica o gênero literário (mínimo 3 caracteres)
+                            </div>
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="col-12">
+                            <label for="id_description" class="form-label fw-semibold">
+                                <i class="bi bi-journal-text me-2 text-primary"></i>Descrição
+                            </label>
+                            <textarea class="form-control" 
+                                      id="id_description" 
+                                      name="description" 
+                                      rows="5" 
+                                      placeholder="Descreva as características deste gênero literário...">{{ object.description }}</textarea>
+                            <div class="form-text">
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                Informações que ajudam a entender e classificar este gênero
+                                <span class="float-end text-muted" id="descCharCount">0/500 caracteres</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Required Fields Info -->
+                    <div class="alert alert-warning d-flex align-items-center mt-4">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <small>
+                            <strong>Atenção:</strong> Alterar o nome do gênero pode afetar a categorização dos livros existentes.
+                        </small>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <a href="{% url 'genres_list' %}" 
+                               class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg w-100" 
+                                    id="submitBtn">
+                                <i class="bi bi-check-circle me-2"></i>Atualizar Gênero
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change History Card (Optional) -->
+        <div class="card border-0 bg-light mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-clock-history me-2"></i>Informações da Edição:
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Nome Original:</small>
+                        <strong>{{ object.name }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Status:</small>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle me-1"></i>Ativo
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="card border-0 bg-light mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-lightbulb me-2"></i>Dicas ao editar:
+                </h6>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check2 text-success me-2"></i>
+                        Verifique se não há gênero similar antes de renomear
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check2 text-success me-2"></i>
+                        Mantenha o nome claro e reconhecível
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check2 text-success me-2"></i>
+                        Atualize a descrição para refletir mudanças
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check2 text-success me-2"></i>
+                        Considere o impacto nos livros já categorizados
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('genreForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const descriptionField = document.getElementById('id_description');
+    const descCharCount = document.getElementById('descCharCount');
+    const nameField = document.getElementById('id_name');
+    const originalName = '{{ object.name|escapejs }}';
+    
+    // Initialize character counter with current value
+    if (descriptionField && descCharCount) {
+        const updateCounter = () => {
+            const currentLength = descriptionField.value.length;
+            const maxLength = 500;
+            descCharCount.textContent = `${currentLength}/${maxLength} caracteres`;
+            
+            if (currentLength > maxLength * 0.9) {
+                descCharCount.classList.add('text-warning');
+            } else {
+                descCharCount.classList.remove('text-warning');
+            }
+            
+            if (currentLength > maxLength) {
+                descCharCount.classList.add('text-danger');
+                descriptionField.value = descriptionField.value.substring(0, maxLength);
+            } else {
+                descCharCount.classList.remove('text-danger');
+            }
+        };
+        
+        // Update on load
+        updateCounter();
+        
+        // Update on input
+        descriptionField.addEventListener('input', updateCounter);
+    }
+    
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+        // Check if name was changed
+        if (nameField.value !== originalName) {
+            const confirmed = confirm(
+                `Você está alterando o nome do gênero de "${originalName}" para "${nameField.value}".\n\n` +
+                'Esta alteração afetará todos os livros categorizados com este gênero.\n\n' +
+                'Deseja continuar?'
+            );
+            
+            if (!confirmed) {
+                e.preventDefault();
+                return;
+            }
+        }
+        
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Atualizando...';
+        
+        // Restore if there's an error (fallback)
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }, 10000);
+    });
+    
+    // Name field validation
+    if (nameField) {
+        nameField.addEventListener('input', function() {
+            const value = this.value.trim();
+            
+            // Remove invalid characters
+            this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s-]/g, '');
+            
+            if (value.length > 0 && value.length < 3) {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            } else if (value.length >= 3) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-invalid', 'is-valid');
+            }
+        });
+        
+        // Auto-capitalize first letter
+        nameField.addEventListener('blur', function() {
+            if (this.value) {
+                // Capitalize each word
+                this.value = this.value
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
+            }
+        });
+        
+        // Mark as valid on load if has value
+        if (nameField.value.trim().length >= 3) {
+            nameField.classList.add('is-valid');
+        }
+    }
+    
+    // Description field validation
+    if (descriptionField) {
+        descriptionField.addEventListener('blur', function() {
+            if (this.value.trim().length > 0) {
+                this.classList.add('is-valid');
+            }
+        });
+        
+        // Mark as valid on load if has value
+        if (descriptionField.value.trim().length > 0) {
+            descriptionField.classList.add('is-valid');
+        }
+    }
+    
+    // Auto-focus on name field
+    if (nameField) {
+        nameField.focus();
+        nameField.select(); // Select all text for easy editing
+    }
+    
+    // Warn if leaving page with unsaved changes
+    let formModified = false;
+    let formSubmitted = false;
+    
+    form.addEventListener('input', function() {
+        formModified = true;
+    });
+    
+    form.addEventListener('submit', function() {
+        formSubmitted = true;
+    });
+    
+    window.addEventListener('beforeunload', function(e) {
+        if (formModified && !formSubmitted) {
+            e.preventDefault();
+            e.returnValue = 'Você tem alterações não salvas. Deseja realmente sair?';
+        }
+    });
+    
+    // Cancel button confirmation if changes were made
+    const cancelBtn = document.querySelector('a[href*="genres_list"]');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function(e) {
+            if (formModified) {
+                const confirmed = confirm(
+                    'Você tem alterações não salvas.\n\n' +
+                    'Deseja realmente cancelar e perder as alterações?'
+                );
+                
+                if (!confirmed) {
+                    e.preventDefault();
+                }
+            }
+        });
+    }
+    
+    // Show what changed
+    const showChanges = () => {
+        const changes = [];
+        
+        if (nameField.value !== originalName) {
+            changes.push(`Nome: "${originalName}" → "${nameField.value}"`);
+        }
+        
+        if (changes.length > 0) {
+            console.log('Alterações detectadas:', changes);
+        }
+    };
+    
+    nameField.addEventListener('change', showChanges);
+    descriptionField.addEventListener('change', showChanges);
+});
+</script>
+{% endblock %}

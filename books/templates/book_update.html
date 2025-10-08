@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Livro - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'book_detail' object.pk %}" class="text-decoration-none">
+                {{ object.title|truncatechars:30 }}
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            Editar Livro
+        </li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="row align-items-center mb-4">
+    <div class="col">
+        <h1 class="h2 text-primary mb-1">
+            <i class="bi bi-pencil-square me-2"></i>Editar Livro
+        </h1>
+        <p class="text-muted mb-0">Atualize as informações de "{{ object.title }}"</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-book me-2"></i>Informações do Livro
+                </h5>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Info Alert -->
+                <div class="alert alert-info d-flex align-items-start mb-4">
+                    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Editando:</strong> {{ object.title }}
+                        <br>
+                        <small>As alterações serão salvas permanentemente.</small>
+                    </div>
+                </div>
+
+                <!-- Error Messages -->
+                {% if form.errors %}
+                    <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                       <div>
+                        <strong>Por favor, corrija os erros abaixo:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Campos marcados com * são obrigatórios</li>                            
+                        </ul>
+                    </div>
+                    </div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data" id="bookForm" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <!-- Title Field -->
+                        <div class="col-12">
+                            <label for="id_title" class="form-label fw-semibold">
+                                <i class="bi bi-book me-2 text-primary"></i>Título *
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="id_title" 
+                                   name="title" 
+                                   value="{{ object.title }}"
+                                   placeholder="Digite o título do livro"
+                                   required>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Nome completo da obra
+                            </div>
+                        </div>
+
+                        <!-- Author Field -->
+                        <div class="col-md-6">
+                            <label for="id_author" class="form-label fw-semibold">
+                                <i class="bi bi-person me-2 text-primary"></i>Autor *
+                            </label>
+                            <div class="input-group">
+                                <select class="form-select form-select-lg" 
+                                        id="id_author" 
+                                        name="author" 
+                                        value="{{ object.author }}"
+                                        required>
+                                   <option value="">Selecione um autor</option>
+                                    {% for author in authors %}
+                                    <option value="{{ author.id }}"
+                                         {% if author.id|stringformat:"s" == object.author.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ author.name }}</option>
+                                    {% endfor %}
+                                </select>                                
+                            </div>
+                             <div class="form-text">
+                                <i class="bi bi-lightbulb me-1"></i>
+                                Selecione da lista ou <a href="{% url 'new_author' %}">adicione novo autor</a>
+                            </div>
+                        </div>
+
+                        <!-- Genre Field -->
+                        <div class="col-md-6">
+                            <label for="id_literary_genre" class="form-label fw-semibold">
+                                <i class="bi bi-tag me-2 text-primary"></i>Gênero Literário
+                            </label>
+                            <div class="input-group">
+                                <select class="form-select form-select-lg" 
+                                        id="id_literary_genre" 
+                                        name="literary_genre">                                    
+                                    <option value="">Selecione um gênero</option>
+                                    {% for genre in genres %}
+                                    <option value="{{ genre.id }}"
+                                     {% if object.literary_genre and genre.id == object.literary_genre.id %}selected{% endif %}>
+                                     {{ genre.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>                               
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-question-circle me-1"></i>
+                                Selecione da lista ou <a href="{% url 'new_genre' %}">adicione novo gênero</a>
+                            </div>
+                        </div>
+
+                        <!-- Pages and Year Row -->
+                        <div class="col-md-6">
+                            <label for="id_pages" class="form-label fw-semibold">
+                                <i class="bi bi-file-text me-2 text-primary"></i>Número de Páginas
+                            </label>
+                            <input type="number" 
+                                   class="form-control form-control-lg" 
+                                   id="id_pages" 
+                                   name="pages" 
+                                   value="{{ object.pages }}"
+                                   placeholder="Ex: 350"
+                                   min="1"
+                                   max="9999">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_publication_year" class="form-label fw-semibold">
+                                <i class="bi bi-calendar3 me-2 text-primary"></i>Ano de Publicação *
+                            </label>
+                            <input type="number" 
+                                   class="form-control form-control-lg" 
+                                   id="id_publication_year" 
+                                   name="publication_year" 
+                                   value="{{ object.publication_year }}"
+                                   placeholder="Ex: 2023"
+                                   min="1000"
+                                   max="2030"
+                                   required>
+                        </div>
+
+                        <!-- Synopsis Field -->
+                        <div class="col-12">
+                            <label for="id_synopsis" class="form-label fw-semibold">
+                                <i class="bi bi-journal-text me-2 text-primary"></i>Sinopse
+                            </label>
+                            <textarea class="form-control" 
+                                      id="id_synopsis" 
+                                      name="synopsis" 
+                                      rows="4" 
+                                      placeholder="Descreva brevemente o enredo...">{{ object.synopsis }}</textarea>
+                            <div class="form-text">
+                                <i class="bi bi-chat-left-text me-1"></i>
+                                Resumo do livro
+                                <span class="float-end text-muted" id="charCount">0/1000 caracteres</span>
+                            </div>
+                        </div>
+
+                        <!-- Photo Upload Field -->
+                        <div class="col-12">
+                            <label for="id_photo" class="form-label fw-semibold">
+                                <i class="bi bi-image me-2 text-primary"></i>Foto da Capa
+                            </label>
+                            
+                            <!-- Current Photo Preview -->
+                            {% if object.photo %}
+                            <div class="mb-3">
+                                <p class="text-muted small mb-2">Capa atual:</p>
+                                <img src="{{ object.photo.url }}" 
+                                     class="img-thumbnail" 
+                                     alt="{{ object.title }}"
+                                     style="max-height: 200px;"
+                                     id="currentPhoto">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="removePhoto" 
+                                           name="remove_photo">
+                                    <label class="form-check-label text-danger" for="removePhoto">
+                                        <i class="bi bi-trash me-1"></i>Remover capa atual
+                                    </label>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="card border-2 border-dashed">
+                                <div class="card-body text-center py-4">
+                                    <div class="mb-3">
+                                        <i class="bi bi-cloud-upload text-muted display-4"></i>
+                                    </div>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           id="id_photo" 
+                                           name="photo" 
+                                           accept="image/*">
+                                    <div class="form-text mt-3">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        {% if object.photo %}
+                                        Selecione uma nova capa para substituir a atual
+                                        {% else %}
+                                        Formatos aceitos: JPG, PNG, GIF (máx. 5MB)
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Preview Area -->
+                                    <div id="imagePreview" class="mt-3" style="display: none;">
+                                        <p class="text-muted small mb-2">Nova capa:</p>
+                                        <img id="previewImg" class="img-thumbnail" style="max-height: 200px;">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                                                <i class="bi bi-x me-1"></i>Cancelar nova capa
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row g-3 mt-4">
+                        <div class="col-md-6">
+                            <a href="{% url 'books_list' %}" 
+                               class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg w-100" 
+                                    id="submitBtn">
+                                <i class="bi bi-check-circle me-2"></i>Atualizar Livro
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Book Info Card -->
+        <div class="card border-0 bg-light mt-4">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary mb-3">
+                    <i class="bi bi-info-square me-2"></i>Informações Atuais:
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Título Original:</small>
+                        <strong>{{ object.title }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Autor:</small>
+                        <strong>{{ object.author }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Ano:</small>
+                        <strong>{{ object.publication_year }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Gênero:</small>
+                        <strong>{{ object.literary_genre|default:"Não definido" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% load static %}{% static 'js/edit_book.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir Autor - Biblioteca Digital{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'books_list' %}" class="text-decoration-none">
+                <i class="bi bi-house me-1"></i>Biblioteca
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'authors_list' %}" class="text-decoration-none">
+                Autores
+            </a>
+        </li>
+        <li class="breadcrumb-item active text-danger" aria-current="page">
+            Excluir Autor
+        </li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+        <!-- Delete Card -->
+        <div class="card border-danger shadow">
+            <div class="card-header bg-danger text-white text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-person-x display-1"></i>
+                </div>
+                <h2 class="h4 fw-bold mb-0">Excluir Autor</h2>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Warning Message -->
+                <div class="alert alert-warning d-flex align-items-start mb-4">
+                    <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Atenção:</strong> Esta ação não pode ser desfeita.
+                    </div>
+                </div>
+
+                <!-- Author Information -->
+                <div class="text-center mb-4 py-3 bg-light rounded">
+                    <p class="text-muted mb-2">Tem certeza que deseja excluir o autor:</p>
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        {% if object.photo %}
+                        <img src="{{ object.photo.url }}" class="rounded-circle me-3" alt="{{ object.name }}"
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                        {% else %}
+                        <i class="bi bi-person-circle text-muted me-3" style="font-size: 3.5rem;"></i>
+                        {% endif %}
+                        <h4 class="fw-bold text-danger mb-0">"{{ object.name }}"</h4>
+                    </div>
+                    {% if object.nationality %}
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-geo-alt me-1"></i>{{ object.nationality }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Impact Info -->
+                <div class="mb-4">
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Não é possível excluir autores que estejam vinculados a algum livro cadastrado.
+                    </p>
+                </div>
+
+                <!-- Confirmation Form -->
+                <form method="POST" id="deleteForm">
+                    {% csrf_token %}
+
+                    <!-- Action Buttons -->
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <a href="{% url 'author_detail' pk=object.pk %}" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-danger w-100" id="deleteBtn">
+                                <i class="bi bi-trash me-2"></i>Excluir
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>        
+
+        <!-- Alternative Action -->
+        <div class="text-center mt-3">
+            <a href="{% url 'author_update' pk=object.pk %}" class="text-decoration-none text-muted">
+                <i class="bi bi-pencil me-1"></i>Prefiro editar este autor
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('deleteForm');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const authorName = '{{ object.name|escapejs }}';
+
+        // Form submission with confirmation
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const confirmed = confirm(
+                `Tem certeza que deseja excluir o autor "${authorName}"?\n\n` +
+                'Esta ação não pode ser desfeita e todas as informações do autor serão perdidas.'
+            );
+
+            if (confirmed) {
+                // Change button state
+                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Excluindo...';
+                deleteBtn.disabled = true;
+
+                // Submit form
+                form.submit();
+            }
+        });
+    });
+</script>
+{% endblock %}
