@@ -22,10 +22,12 @@ from books.views import BooksListView, NewBookCreateView, BookDetailView, BookUp
 from accounts.views import RegisterView, UserLoginView, UserLogoutView, UserUpdateView, UserPasswordChangeView, UserProfileView, UserDeleteView
 from genres.views import NewLiteraryGenreCreateView, LiteraryGenresListView, LiteraryGenreUpdateView, LiteraryGenreDeleteView
 from authors.views import  NewAuthorCreateView,  AuthorsListView, AuthorDetailView, AuthorDeleteView, AuthorUpdateView
+from books.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
    # path('', HomeView.as_view(), name='landing'),
+    path('', home_view, name='landing'),
     path('books/', BooksListView.as_view(), name='books_list'),
     path('user_books/', UserBooksListView.as_view(), name='user_books'), 
     path('new_book/', NewBookCreateView.as_view(), name='new_book'),
