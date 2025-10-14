@@ -6,10 +6,15 @@ from books.forms import BookModelForm
 from books.models import Book
 from genres.models import LiteraryGenre
 from authors.models import Author
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 #class HomeView(TemplateView):
 #    template_name = "index.html"
 
+def home_view(request):
+    return HttpResponseRedirect(reverse('books_list', ))
+    
 
 class BooksListView(ListView):
     model = Book

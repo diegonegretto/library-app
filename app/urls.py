@@ -15,23 +15,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from books.views import BooksListView, NewBookCreateView, BookDetailView, BookUpdateView, BookDeleteView,  UserBooksListView
 from accounts.views import RegisterView, UserLoginView, UserLogoutView, UserUpdateView, UserPasswordChangeView, UserProfileView, UserDeleteView
 from genres.views import NewLiteraryGenreCreateView, LiteraryGenresListView, LiteraryGenreUpdateView, LiteraryGenreDeleteView
 from authors.views import  NewAuthorCreateView,  AuthorsListView, AuthorDetailView, AuthorDeleteView, AuthorUpdateView
+from books.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
    # path('', HomeView.as_view(), name='landing'),
-    path('books/', BooksListView.as_view(), name='books_list'),
-    path('user_books/', UserBooksListView.as_view(), name='user_books'), 
-    path('new_book/', NewBookCreateView.as_view(), name='new_book'),
-    path('book/<int:pk>/', BookDetailView.as_view(), name='book_detail'),
-    path('book/<int:pk>/update/', BookUpdateView.as_view(), name='book_update'),
-    path('book/<int:pk>/delete/', BookDeleteView.as_view(), name='book_delete'),
+    path('', home_view, name='landing'),
+    path('books/', include('books.urls')),
     path('authors/', AuthorsListView.as_view(), name='authors_list'),
     path('author/<int:pk>/', AuthorDetailView.as_view(), name='author_detail'),
     path('author/<int:pk>/delete/', AuthorDeleteView.as_view(), name='author_delete'),
