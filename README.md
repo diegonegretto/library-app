@@ -105,7 +105,7 @@ python manage.py runserver
 ```
 
 Acesse o sistema em:  
-👉 [http://localhost:8000/books](http://localhost:8000/books)
+👉 [http://localhost:8000/books/books](http://localhost:8000/books/books)
 
 ---
 
